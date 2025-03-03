@@ -1,0 +1,16 @@
+version: '3.8'
+  services:
+    mariadb:
+            volumes:
+              - db_vol:
+    wordpress:
+              volumes:
+                - wp_vol:
+    nginx:
+      
+  volumes:
+    db_vol:
+    wp_vol:
+
+  networks:
+    
