@@ -1,58 +1,67 @@
 version: '3'
+services:
   # Each container we'll create will have its own service block where we define
   # container name, location of the build and the dockerfile, env file, ports & volumes
-  services:
+  mariadb:
+    container_name: mariadb
+    build: 
+      context: requirements/mariadb
+      dockerfile: Dockerfile
+    # env_file: .env
+    restart: unless-stopped
+    expose: 
+      - "3306"
+    volumes:
+      - db_vol:/var/lib/mysql
+    networks:
+      -  inception
 
-    mariadb:
-      container_name: mariadb
-      build: 
-        context: requirements/mariadb
-        dockerfile: Dockerfile
-      env_file: .env
-      restart: unless-stopped
-      expose: 
-        - "3306"
-      volumes:
-        - db_vol:/var/lib/mysql
-      networks:
-        -  inception
+  nginx:
+    container_name: nginx
+    build:
+      context: requirements/nginx
+      dockerfile: Dockerfile
+    # env_file: .env
+    restart: on-failure
+    ports:
+      - "443:443"
+    volumes:
+      - wp_vol:/var/www/wordpress
+    networks:
+      - inception
+    depends_on:
+      - wordpress
 
-    nginx:
-      container_name: nginx
-      build:
-        context: requirements/nginx
-        dockerfile: Dockerfile
-      env_file: .env
-      restart: on-failure
-      ports: "443:443"
-      volumes:
-        - wp_vol:/var/www/wordpress
-      networks:
-        - inception
-      depends_on:
-        - wordpress
+  wordpress:
+    container_name: wordpress
+    build:
+      context: requirements/wordpress
+      dockerfile: Dockerfile
+    # env_file: .env
+    restart: on-failure
+    expose:
+      - "9000"
+    volumes:
+      - wp_vol:/var/www/wordpress
+    networks:
+      - inception
+    depends_on:
+      - mariadb
 
-    wordpress:
-      container name: wordpress
-      build:
-        context: requirements/wordpress
-        dockerfile: Dockerfile
-      env_file: .env
-      restart: on-failure
-      expose:
-        - "9000"
-      volumes:
-        - wp_vol:/var/www/wordpress
-      networks:
-        - inception
-      depends on:
-        - mariadb
-      
-  volumes:
-    db_vol:
-    wp_vol:
+volumes:
+  db_vol:
+    driver: local
+    driver_opts:
+      type: none
+      device: '/home/ysanchez/mydata/db_vol'
+      o: bind
+  wp_vol:
+    driver: local
+    driver_opts:
+      type: none
+      device: '/home/ysanchez/mydata/wp_vol'
+      o: bind
 
-  networks:
-    inception:
-      driver: bridge
-    
+networks:
+  inception:
+    driver: bridge
