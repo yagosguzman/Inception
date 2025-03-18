@@ -22,4 +22,8 @@ RUN chmod +x /tmp/entrypoint.sh
 
 COPY /conf/wp-config.php /tmp/wp-config.php
 
+# Expose port for PHP-FPM
+EXPOSE 9000
+
+# Start PHP-FPM and WordPress setup
 ENTRYPOINT ["/tmp/entrypoint.sh"]

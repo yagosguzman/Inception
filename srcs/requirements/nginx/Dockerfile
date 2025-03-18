@@ -1,7 +1,7 @@
 FROM debian:bullseye
 
 # We'll update and upgrade apt, and install NGINX, Vim, Curl & OpenSSL
-RUN apt update && apt upgrade -y && apt install -y nginx vim curl openssl
+RUN apt-get update && apt-get upgrade -y && apt-get install -y nginx vim curl openssl
 
 # Now we create a directory to store the ssl key and certificate and create the key 
 # -x509 type of certificate & -nodes to not set pass
@@ -12,14 +12,17 @@ RUN	mkdir -p /etc/nginx/ssl && openssl req -x509 -nodes \
 	-subj "/C=ES/ST=Barcelona/L=Barcelona/O=42/OU=42/CN=ysanchez.42.fr/UID=ysanchez" && \
 	mkdir -p /var/run/nginx
 
+# Copy the nginx.conf file as the default file
 COPY conf/nginx.conf /etc/nginx/conf.d/default.conf
 
+# We create a folder for the html files
 RUN mkdir -p /var/www/html
 
+# Now we expose the port we want to use to communicate
 EXPOSE 443
 
-# RUN ln -s /etc/nginx/sites-available/mydefault /etc/nginx/sites-enabled/
+RUN ln -s /etc/nginx/sites-available/mydefault /etc/nginx/sites-enabled/
 
-# RUN chmod 755 /var/www/html && chown -R www-data:www-data /var/www/html
+RUN chmod 755 /var/www/html && chown -R www-data:www-data /var/www/html
 
 CMD ["nginx", "-g", "daemon off;"]
