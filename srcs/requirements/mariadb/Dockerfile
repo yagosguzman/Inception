@@ -13,3 +13,5 @@ COPY /tools/init-db.sh /docker-entrypoint-initdb.d/init-db.sh
 EXPOSE 3306
 
 RUN chmod +x /docker-entrypoint-initdb.d/init-db.sh
+
+CMD ["mysqld"]

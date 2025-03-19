@@ -30,8 +30,7 @@ down:
 	@cd srcs && docker-compose down
 
 clean: down
-	@echo "Removing volumes and data directories"
-	@sudo rm -rf $(MYDATA_DIR)
+	@echo "Removing volumes and data network"
 	@docker volume rm $$(docker volume ls -q) 2>/dev/null || true
 	@docker network rm $$(docker network ls -q) 2>/dev/null || true
 

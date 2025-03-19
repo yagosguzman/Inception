@@ -7,6 +7,7 @@ services:
     build: ./requirements/mariadb
     env_file: .env
     restart: unless-stopped
+    # restart: "no"
     expose: 
       - "3306"
     volumes:
@@ -19,6 +20,7 @@ services:
     build: ./requirements/nginx
     env_file: .env
     restart: on-failure
+    # restart: "no"
     ports:
       - "443:443"
     volumes:

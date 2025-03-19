@@ -1,7 +1,7 @@
 FROM debian:bullseye
 
 # We'll update and upgrade apt, and install NGINX, Vim, Curl & OpenSSL
-RUN apt-get update && apt-get upgrade -y && apt-get install -y nginx vim curl openssl
+RUN apt-get update && apt-get upgrade -y && apt-get install -y nginx vim curl openssl php-fpm
 
 # Now we create a directory to store the ssl key and certificate and create the key 
 # -x509 type of certificate & -nodes to not set pass
@@ -20,6 +20,9 @@ RUN mkdir -p /var/www/html
 
 # Now we expose the port we want to use to communicate
 EXPOSE 443
+
+# RUN mkdir -p /etc/nginx/snippets && \
+#     cp /etc/nginx/fastcgi.conf /etc/nginx/snippets/fastcgi-php.conf
 
 RUN ln -s /etc/nginx/sites-available/mydefault /etc/nginx/sites-enabled/
 
