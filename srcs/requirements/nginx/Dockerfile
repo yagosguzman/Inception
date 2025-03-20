@@ -13,7 +13,7 @@ RUN	mkdir -p /etc/nginx/ssl && openssl req -x509 -nodes \
 	mkdir -p /var/run/nginx
 
 # Copy the nginx.conf file as the default file
-COPY conf/nginx.conf /etc/nginx/conf.d/default.conf
+COPY conf/default.conf /etc/nginx/conf.d/default.conf
 
 # We create a folder for the html files
 RUN mkdir -p /var/www/html
@@ -23,8 +23,6 @@ EXPOSE 443
 
 # RUN mkdir -p /etc/nginx/snippets && \
 #     cp /etc/nginx/fastcgi.conf /etc/nginx/snippets/fastcgi-php.conf
-
-RUN ln -s /etc/nginx/sites-available/mydefault /etc/nginx/sites-enabled/
 
 RUN chmod 755 /var/www/html && chown -R www-data:www-data /var/www/html
 

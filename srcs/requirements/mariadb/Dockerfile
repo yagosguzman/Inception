@@ -4,6 +4,8 @@ FROM debian:bullseye
 RUN apt-get update && apt upgrade -y && \
 	apt-get install -y mariadb-server
 
+RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld && chmod 777 /run/mysqld
+
 # Copy the custom configuration file for our MariaDB and the bash script to execute it
 COPY conf/50-server.cnf	/etc/mysql/mariadb.conf.d/50-server.cnf
 
@@ -14,4 +16,6 @@ EXPOSE 3306
 
 RUN chmod +x /docker-entrypoint-initdb.d/init-db.sh
 
-CMD ["mysqld"]
+CMD ["bash", "-c", "mysqld --init-file=/docker-entrypoint-initdb.d/init-db.sh"]
+
+# CMD ["mysqld"]
