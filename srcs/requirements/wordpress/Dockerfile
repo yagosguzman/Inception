@@ -18,12 +18,12 @@ RUN wget https://wordpress.org/wordpress-6.7.2.tar.gz -P /var/www/html && \
 	cd /var/www/html && tar -xzf wordpress-6.7.2.tar.gz && rm wordpress-6.7.2.tar.gz
 # Give root rights to write in the wordpress folder and create the folder to store tmp files(if not created)
 
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
+RUN chown -R www-data:www-data /var/www/html/ \
+    && chmod -R 755 /var/www/html/
 
 # Set working directory
 
-WORKDIR /var/www/html
+WORKDIR /var/www/html/
 
 # Copy our config file and script to execute it in case is not configured already
 COPY /tools/entrypoint.sh /tmp/entrypoint.sh
@@ -32,8 +32,6 @@ COPY /tools/entrypoint.sh /tmp/entrypoint.sh
 # & "clear_env = no" to keep env variables while php-fpm is being used
 # COPY /conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 RUN chmod +x /tmp/entrypoint.sh
-
-# COPY /conf/wp-config.php /tmp/wp-config.php
 
 # Expose port for PHP-FPM
 EXPOSE 9000

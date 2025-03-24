@@ -24,7 +24,7 @@ services:
     ports:
       - "443:443"
     volumes:
-      - wp_vol:/var/www/wordpress
+      - wp_vol:/var/www/html
       - ./requirements/nginx/conf:/etc/nginx/conf.d
     networks:
       - inception
@@ -39,7 +39,7 @@ services:
     expose:
       - "9000"
     volumes:
-      - wp_vol:/var/www/wordpress
+      - wp_vol:/var/www/html
     networks:
       - inception
     depends_on:
