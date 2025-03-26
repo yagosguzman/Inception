@@ -19,15 +19,19 @@ setup:
 # The option -d in the docker-compose up is to build it in the background
 build:
 	@echo "Building images and starting containers"
-	@cd srcs && docker compose up -d --build
+	@cd srcs && docker-compose up -d --build
 
 stop:
 	@echo "Stopping containers"
-	@cd srcs && docker compose stop
+	@cd srcs && docker-compose stop
+
+start:
+	@echo "Starting containers"
+	@cd srcs && docker-compose start
 
 down:
 	@echo "Removing containers"
-	@cd srcs && docker compose down
+	@cd srcs && docker-compose down
 
 clean: down
 	@echo "Removing volumes and data network"
@@ -40,4 +44,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all setup build stop down clean fclean re
+.PHONY: all setup build stop start down clean fclean re

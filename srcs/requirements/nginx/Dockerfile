@@ -24,6 +24,7 @@ EXPOSE 443
 # RUN mkdir -p /etc/nginx/snippets && \
 #     cp /etc/nginx/fastcgi.conf /etc/nginx/snippets/fastcgi-php.conf
 
-RUN chmod 755 /var/www/html && chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html
 
 CMD ["nginx", "-g", "daemon off;"]
