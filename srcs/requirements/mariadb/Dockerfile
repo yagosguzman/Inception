@@ -1,21 +1,26 @@
 FROM debian:bullseye
 
-# Update and upgrade apt and install mariadb-server
-RUN apt-get update && apt upgrade -y && \
-	apt-get install -y mariadb-server
+# Instala MariaDB correctamente incluyendo los scripts de entrada
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y mariadb-server gettext && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /docker-entrypoint-initdb.d
 
-RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld && chmod 777 /run/mysqld
+# Configura permisos
+RUN mkdir -p /run/mysqld && \
+    chown -R mysql:mysql /run/mysqld /var/lib/mysql
 
-# Copy the custom configuration file for our MariaDB and the bash script to execute it
-COPY conf/50-server.cnf	/etc/mysql/mariadb.conf.d/50-server.cnf
+# Copia configuración
+COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/
 
-COPY /tools/init-db.sql /docker-entrypoint-initdb.d/init-db.sql
+# Procesador de variables
+COPY tools/init-db.sql /docker-entrypoint-initdb.d/init-db.template
 
-# Expose the port we want to use
+# Script de entrada modificado
+RUN echo '#!/bin/bash\nset -e\n\
+envsubst < /docker-entrypoint-initdb.d/init-db.template > /docker-entrypoint-initdb.d/init-db.sql\n\
+exec mysqld_safe --init-file=/docker-entrypoint-initdb.d/init-db.sql' > /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+
 EXPOSE 3306
-
-RUN chmod +x /docker-entrypoint-initdb.d/init-db.sql
-
-CMD ["bash", "-c", "mysqld --init-file=/docker-entrypoint-initdb.d/init-db.sql"]
-
-# CMD ["mysqld"]
+ENTRYPOINT ["/entrypoint.sh"]
