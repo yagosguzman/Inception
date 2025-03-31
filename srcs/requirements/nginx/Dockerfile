@@ -21,10 +21,11 @@ RUN mkdir -p /var/www/html
 # Now we expose the port we want to use to communicate
 EXPOSE 443
 
-# RUN mkdir -p /etc/nginx/snippets && \
-#     cp /etc/nginx/fastcgi.conf /etc/nginx/snippets/fastcgi-php.conf
-
+# We change the owner and group of the folder /var/www/html to www-data (Default Nginx user in Debian)
+# Also we set permissions for the same folder 
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html
 
+# Default command when the container starts
+# Launches Nginx web server in the foreground to prevent the container from exiting
 CMD ["nginx", "-g", "daemon off;"]

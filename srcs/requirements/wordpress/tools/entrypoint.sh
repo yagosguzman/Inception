@@ -1,21 +1,21 @@
 #!/bin/bash
 
-# Esperar a que la base de datos esté lista
-echo "⏳ Esperando a que MariaDB esté lista..."
+# Waiting for MariaDB
+echo "Waiting for MariaDB to be ready..."
 until mysql -h mariadb -u ${MYSQL_USER} -p${MYSQL_PASSWORD} -e "SELECT 1" >/dev/null 2>&1; do
     sleep 2
 done
-echo "✅ MariaDB está lista."
+echo "MariaDB is ready."
 
-# Asegurar permisos de la carpeta
+# Check for folder's permissions
 chown -R www-data:www-data /var/www/html
 
-# Si WordPress no está instalado, instalarlo
+# If WordPress is not installed we'll install it
 if [ ! -f "/var/www/html/wordpress/wp-config.php" ]; then
-    echo "🌍 Descargando WordPress..."
+    echo "Downloading WordPress..."
     wp core download --allow-root
 
-    echo "🔧 Creando configuración de WordPress..."
+    echo "Creating configuration file for WordPress..."
     wp config create --allow-root \
         --dbname=${MYSQL_DATABASE} \
         --dbuser=${MYSQL_USER} \
@@ -23,7 +23,7 @@ if [ ! -f "/var/www/html/wordpress/wp-config.php" ]; then
         --dbhost=mariadb \
         --path=/var/www/html
 
-    echo "⚡ Instalando WordPress..."
+    echo "Installing WordPress..."
     wp core install --allow-root \
         --url="https://${DOMAIN_NAME}" \
         --title="${WP_TITLE}" \
@@ -31,15 +31,15 @@ if [ ! -f "/var/www/html/wordpress/wp-config.php" ]; then
         --admin_password="${WP_ADMIN_PASSWORD}" \
         --admin_email="${WP_ADMIN_EMAIL}"
 
-    echo "👤 Creando usuario adicional..."
+    echo "Creating additional user..."
     wp user create --allow-root \
         ${WP_USER} \
         ${WP_USER_EMAIL} \
         --role=author \
         --user_pass=${WP_USER_PASSWORD}
 
-    echo "🎨 Configuraciones adicionales..."
-    wp option update blogdescription "Sitio WordPress en Docker" --allow-root
+    echo "Additional configuration..."
+    wp option update blogdescription "My first WordPress site using Docker" --allow-root
     wp rewrite structure '/%postname%/' --allow-root
     wp option update timezone_string "Europe/Madrid" --allow-root
     wp option update date_format "d/m/Y" --allow-root
@@ -48,13 +48,13 @@ if [ ! -f "/var/www/html/wordpress/wp-config.php" ]; then
     wp option update default_comment_status "closed" --allow-root
     wp option update default_ping_status "closed" --allow-root
 
-    echo "🎉 WordPress instalado y configurado correctamente."
+    echo "WordPress installed and configured successfully!"
 else
-    echo "✅ WordPress ya estaba instalado."
+    echo "WordPress already installed."
 fi
 
-# Ajustar permisos de nuevo
+# Set up permissions again
 chown -R www-data:www-data /var/www/html
 
-# Iniciar PHP-FPM en foreground
+# Start PHP-FPM in foreground mode
 exec php-fpm7.4 -F
